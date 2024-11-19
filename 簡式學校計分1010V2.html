@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            max-width: 60px;
+            margin-left: 10px;
+        }
+        .options, .radio-buttons {
+            margin-top: 10px;
+        }
+        .scroll-bar {
+            width: 100%;
+            max-width: 80px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            label {
+                font-size: 14px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        function updateValidRows() {
+            let validRows = 25;
+            if (document.getElementById("noScore1-4").checked) validRows -= 1;
+            if (document.getElementById("noScore1-6").checked) validRows -= 1;
+            document.getElementById("validRows").innerText = validRows;
+        }
+
+        function updateImprovementInput() {
+            const previousRating = document.querySelector('input[name="previousRating"]:checked').value;
+            const improvementInput = document.getElementById("improvement");
+            if (previousRating === "否") {
+                improvementInput.disabled = true;
+                improvementInput.value = '';  // Clear the value if disabled
+            } else {
+                improvementInput.disabled = false;
+            }
+        }
+
+        function calculateScore() {
+            const sec1 = parseFloat(document.getElementById("section1").value) || 0;
+            const sec2 = parseFloat(document.getElementById("section2").value) || 0;
+            const sec3 = parseFloat(document.getElementById("section3").value) || 0;
+            const sec4 = parseFloat(document.getElementById("section4").value) || 0;
+            const validRows = parseFloat(document.getElementById("validRows").innerText);
+            const previousRating = document.querySelector('input[name="previousRating"]:checked').value;
+            const improvement = parseFloat(document.getElementById("improvement").value) || 0;
+            const bonus = parseFloat(document.getElementById("bonus").value) || 0;
+
+            let total = (sec1 + sec2 + sec3 + sec4) / (validRows * 0.05);
+            if (previousRating === "是") {
+                total = total * 0.9 + improvement + bonus;
+            } else {
+                total += bonus;
+            }
+
+            document.getElementById("finalScore").innerText = total.toFixed(2);
+            document.getElementById("finalScoreRounded").innerText = Math.round(total);
+        }
+    </script>
+</head>
+<body>
+
+<div class="section">
+    <label>一、行政措施及運作—小計：</label>
+    <input type="number" id="section1">
+</div>
+
+<div class="section">
+    <label>二、課程及教學實施—小計：</label>
+    <input type="number" id="section2">
+</div>
+
+<div class="section">
+    <label>三、建教生實習及輔導訪視—小計：</label>
+    <input type="number" id="section3">
+</div>
+
+<div class="section">
+    <label>四、學校/機構聯絡協調—小計：</label>
+    <input type="number" id="section4">
+</div>
+
+<div class="options">
+    <label><input type="checkbox" id="noScore1-4" onchange="updateValidRows()"> 1-4不計分</label>
+    <label><input type="checkbox" id="noScore1-6" onchange="updateValidRows()"> 1-6不計分</label>
+</div>
+
+<div class="section">
+    <label>有效計分項目數：</label>
+    <span id="validRows">25</span>
+</div>
+
+<div class="radio-buttons">
+    <label>去年是否接受考核？</label>
+    <label><input type="radio" name="previousRating" value="是" onchange="updateImprovementInput()"> 有</label>
+    <label><input type="radio" name="previousRating" value="否" onchange="updateImprovementInput()"> 無</label>
+</div>
+
+<div class="section">
+    <label>前一年考核意見改進：</label>
+    <input type="number" id="improvement" min="0" max="10" class="scroll-bar" disabled>
+</div>
+
+<div class="section">
+    <label>辦理特色及具體成果加分：</label>
+    <input type="number" id="bonus" min="0" max="3" class="scroll-bar">
+</div>
+
+<div class="section">
+    <button onclick="calculateScore()">計算得分</button>
+</div>
+
+<div class="section">
+    <label>最終得分 (不四捨五入)：</label>
+    <span id="finalScore">0</span>
+</div>
+
+<div class="section">
+    <label>最終得分 (四捨五入)：</label>
+    <span id="finalScoreRounded">0</span>
+</div>
+
+</body>
+</html>
